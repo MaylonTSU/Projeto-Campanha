@@ -48,3 +48,12 @@ Dia 1 — Setup inicial. Projeto vazio.
 ### Windows: ativar venv bloqueado por política de execução
 **Erro:** `venv\Scripts\activate` falha com PSSecurityException
 **Solução:** Rodar antes: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+## Status atual
+Dia 1 — Concluído.
+Estrutura criada, FastAPI rodando, health endpoint funcionando.
+Dois commits no GitHub. .gitignore configurado.
+
+## Próximo passo
+Dia 2 — Modelos de dados e conexão com Supabase.
+Criar tabelas: campaigns, leads, messages, events.
