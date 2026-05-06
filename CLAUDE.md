@@ -58,13 +58,23 @@ Dois commits no GitHub. .gitignore configurado.
 Dia 2 — Concluído.
 4 tabelas criadas no Supabase: campaigns, leads, messages, events.
 Modelos SQLAlchemy com relacionamentos e enums.
-8/8 testes passando.
+8/8 testes passando. Repositório limpo no GitHub.
 
 ## Hurdles encontrados
 - Alembic autogenerate vazio: modelos precisam ser importados no env.py com `import app.models`
 - UUID PostgreSQL-específico quebra testes SQLite: usar `sqlalchemy.Uuid` genérico
 - database.py precisou de fallback SQLite para testes rodarem sem .env
+- pycache commitado: usar `git rm -r --cached` para remover do rastreamento
+
+## Status atual
+Dia 3 — Concluído.
+CRUD de campanhas implementado com 4 endpoints e 8 testes.
+16/16 testes passando.
+
+## Hurdles encontrados
+- SQLite :memory: com pool de conexões: usar `StaticPool` no engine de teste
+- Modelos precisam ser importados antes de `Base.metadata.create_all`: adicionar `import app.models` no topo do test_campaigns.py
 
 ## Próximo passo
-Dia 3 — CRUD de campanhas com testes.
-Criar endpoints: POST /campaigns, GET /campaigns, GET /campaigns/{id}, PATCH /campaigns/{id}/status
+Dia 4 — Funil e eventos.
+Criar endpoints para leads e movimentação no funil.
