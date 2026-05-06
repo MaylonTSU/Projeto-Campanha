@@ -54,6 +54,17 @@ Dia 1 — Concluído.
 Estrutura criada, FastAPI rodando, health endpoint funcionando.
 Dois commits no GitHub. .gitignore configurado.
 
+## Status atual
+Dia 2 — Concluído.
+4 tabelas criadas no Supabase: campaigns, leads, messages, events.
+Modelos SQLAlchemy com relacionamentos e enums.
+8/8 testes passando.
+
+## Hurdles encontrados
+- Alembic autogenerate vazio: modelos precisam ser importados no env.py com `import app.models`
+- UUID PostgreSQL-específico quebra testes SQLite: usar `sqlalchemy.Uuid` genérico
+- database.py precisou de fallback SQLite para testes rodarem sem .env
+
 ## Próximo passo
-Dia 2 — Modelos de dados e conexão com Supabase.
-Criar tabelas: campaigns, leads, messages, events.
+Dia 3 — CRUD de campanhas com testes.
+Criar endpoints: POST /campaigns, GET /campaigns, GET /campaigns/{id}, PATCH /campaigns/{id}/status
