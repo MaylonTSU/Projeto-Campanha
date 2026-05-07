@@ -71,10 +71,22 @@ Dia 3 — Concluído.
 CRUD de campanhas implementado com 4 endpoints e 8 testes.
 16/16 testes passando.
 
+
 ## Hurdles encontrados
 - SQLite :memory: com pool de conexões: usar `StaticPool` no engine de teste
 - Modelos precisam ser importados antes de `Base.metadata.create_all`: adicionar `import app.models` no topo do test_campaigns.py
+- .env exposto no GitHub: usar `git filter-branch --force` para remover do histórico completo, depois `git push --force`. Sempre trocar a senha imediatamente.
+
+## Status atual
+Dia 4 — Concluído.
+CRUD de leads com movimentação de funil implementado.
+4 endpoints: criar lead, listar por campanha, buscar lead, atualizar etapa do funil.
+Evento registrado automaticamente a cada movimentação.
+27/27 testes passando.
+
+## Hurdles encontrados
+- EmailStr do Pydantic requer `email-validator`: instalar com `pip install 'pydantic[email]'`
 
 ## Próximo passo
-Dia 4 — Funil e eventos.
-Criar endpoints para leads e movimentação no funil.
+Dia 5 — Mensagens e analytics.
+Endpoints para disparar mensagens e consultar métricas de campanha.
