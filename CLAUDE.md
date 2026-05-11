@@ -18,75 +18,71 @@ Orchestrator-Workers.
 O Campaign Engine é o orquestrador central.
 Workers: Campaign, Audience, Message, Funnel, Analytics.
 
-## Estrutura de pastas esperada
+## Estrutura de pastas
 app/
-main.py
-database.py
-models/
-routers/
-services/
-schemas/
+  main.py
+  database.py
+  models/
+  routers/
+  services/
+  schemas/
 tests/
 .env.example
 requirements.txt
 
 ## Convenções obrigatórias
 - Todo endpoint novo precisa ter teste correspondente em tests/
-- Commits pequenos e descritivos (ex: "Add campaign create endpoint")
+- Commits pequenos e descritivos
 - Nunca commitar arquivo .env
 - Rodar os testes antes de cada commit
 
-## Status atual
-Dia 1 — Setup inicial. Projeto vazio.
-
-## Decisões tomadas
+## Decisões arquiteturais tomadas
 - Workflow fixo para o MVP (não agente autônomo)
 - Português para nomes de variáveis de negócio, inglês para código
-
-## Common Hurdles
-
-### Windows: ativar venv bloqueado por política de execução
-**Erro:** `venv\Scripts\activate` falha com PSSecurityException
-**Solução:** Rodar antes: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
-
-## Status atual
-Dia 1 — Concluído.
-Estrutura criada, FastAPI rodando, health endpoint funcionando.
-Dois commits no GitHub. .gitignore configurado.
-
-## Status atual
-Dia 2 — Concluído.
-4 tabelas criadas no Supabase: campaigns, leads, messages, events.
-Modelos SQLAlchemy com relacionamentos e enums.
-8/8 testes passando. Repositório limpo no GitHub.
-
-## Hurdles encontrados
-- Alembic autogenerate vazio: modelos precisam ser importados no env.py com `import app.models`
-- UUID PostgreSQL-específico quebra testes SQLite: usar `sqlalchemy.Uuid` genérico
-- database.py precisou de fallback SQLite para testes rodarem sem .env
-- pycache commitado: usar `git rm -r --cached` para remover do rastreamento
-
-## Status atual
-Dia 3 — Concluído.
-CRUD de campanhas implementado com 4 endpoints e 8 testes.
-16/16 testes passando.
-
-
-## Hurdles encontrados
-- SQLite :memory: com pool de conexões: usar `StaticPool` no engine de teste
-- Modelos precisam ser importados antes de `Base.metadata.create_all`: adicionar `import app.models` no topo do test_campaigns.py
-- .env exposto no GitHub: usar `git filter-branch --force` para remover do histórico completo, depois `git push --force`. Sempre trocar a senha imediatamente.
+- Relação N para N entre leads e campaigns via tabela campaign_leads
+- leads é tabela independente — sem campaign_id direto
+- messages e events apontam para campaign_lead_id, não para lead_id
 
 ## Status atual
 Dia 4 — Concluído.
-CRUD de leads com movimentação de funil implementado.
-4 endpoints: criar lead, listar por campanha, buscar lead, atualizar etapa do funil.
-Evento registrado automaticamente a cada movimentação.
 27/27 testes passando.
+Endpoints: campaigns (4), leads com funil (4).
+Evento registrado automaticamente a cada movimentação de funil.
 
-## Hurdles encontrados
-- EmailStr do Pydantic requer `email-validator`: instalar com `pip install 'pydantic[email]'`
+## Em andamento
+Refatoração do modelo de dados para N para N (leads ↔ campaigns).
+Etapa atual: 6 de 6 — Testes.
+
+Etapas concluídas:
+1. CampaignLead criado, campaign_id removido de Lead, Message e Event
+   atualizados para campaign_lead_id.
+2. Migration gerada e aplicada no Supabase (alembic upgrade head).
+3. Schemas atualizados: campaign_lead.py criado (CampaignLeadCreate,
+   CampaignLeadResponse, CampaignLeadStatusUpdate,
+   CampaignLeadWithLeadResponse); LeadResponse sem campaign_id e status.
+4. Services atualizados: campaign_lead.py criado (create, get, list,
+   update_status); lead.py reescrito — create_lead usa transação Lead +
+   CampaignLead + Event; list_leads_with_status adicionado com joinedload.
+5. Routers atualizados: campaign_leads.py criado (enroll, list, get,
+   update_status); leads.py atualizado — GET /leads retorna
+   CampaignLeadWithLeadResponse, /funnel removido; main.py registra
+   campaign_leads router.
 
 ## Próximo passo
-Dia 5 — Mensagens e analytics.
-Endpoints para disparar mensagens e consultar métricas de campanha.
+Etapa 6 — Reescrever testes para cobrir o novo modelo N para N.
+
+## Hurdles documentados
+- Windows venv bloqueado: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+- Alembic autogenerate vazio: importar modelos no env.py com `import app.models`
+- UUID PostgreSQL quebra testes SQLite: usar `sqlalchemy.Uuid` genérico
+- database.py precisa de fallback SQLite: `os.environ.get("DATABASE_URL", "sqlite:///:memory:")`
+- pycache no git: `git rm -r --cached __pycache__`
+- SQLite em memória com FastAPI: usar `StaticPool` no engine de teste
+- Importar `app.models` antes de `Base.metadata.create_all` nos testes
+- .env exposto: `git filter-branch --force` + trocar senha imediatamente
+- EmailStr requer: `pip install 'pydantic[email]'`
+- Débito técnico: EventTipo.abertura usado para transições de funil —
+  criar EventTipo.mudanca_status no futuro
+- sa.Enum com create_type=False não evita CREATE TYPE no op.create_table:
+  usar postgresql.ENUM (from sqlalchemy.dialects import postgresql) que
+  respeita create_type=False de forma confiável

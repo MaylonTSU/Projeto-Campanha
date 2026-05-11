@@ -37,6 +37,4 @@ class Campaign(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
 
-    leads: Mapped[list["Lead"]] = relationship("Lead", back_populates="campaign")
-    messages: Mapped[list["Message"]] = relationship("Message", back_populates="campaign")
-    events: Mapped[list["Event"]] = relationship("Event", back_populates="campaign")
+    campaign_leads: Mapped[list["CampaignLead"]] = relationship("CampaignLead", back_populates="campaign")

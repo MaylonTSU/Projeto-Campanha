@@ -5,7 +5,18 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
-from app.models import Campaign, CampaignStatus, Event, EventTipo, Lead, LeadStatus, Message, MessageCanal, MessageStatus
+from app.models import (
+    Campaign,
+    CampaignLead,
+    CampaignStatus,
+    Event,
+    EventTipo,
+    Lead,
+    LeadStatus,
+    Message,
+    MessageCanal,
+    MessageStatus,
+)
 
 
 @pytest.fixture(scope="module")
@@ -33,23 +44,25 @@ def test_campaign_defaults(db):
 
 def test_lead_defaults(db):
     campaign = db.query(Campaign).first()
-    lead = Lead(campaign_id=campaign.id, nome="João Silva", email="joao@example.com")
+    lead = Lead(nome="João Silva", email="joao@example.com")
     db.add(lead)
+    db.flush()
+    cl = CampaignLead(campaign_id=campaign.id, lead_id=lead.id)
+    db.add(cl)
     db.commit()
     db.refresh(lead)
+    db.refresh(cl)
 
     assert isinstance(lead.id, uuid.UUID)
-    assert lead.status == LeadStatus.novo
+    assert cl.status == LeadStatus.novo
     assert lead.telefone is None
     assert lead.dados_extras is None
 
 
 def test_message_defaults(db):
-    campaign = db.query(Campaign).first()
-    lead = db.query(Lead).first()
+    cl = db.query(CampaignLead).first()
     message = Message(
-        campaign_id=campaign.id,
-        lead_id=lead.id,
+        campaign_lead_id=cl.id,
         canal=MessageCanal.email,
         conteudo="Olá, temos uma oferta especial para você!",
     )
@@ -64,12 +77,10 @@ def test_message_defaults(db):
 
 
 def test_event_creation(db):
-    campaign = db.query(Campaign).first()
-    lead = db.query(Lead).first()
+    cl = db.query(CampaignLead).first()
     message = db.query(Message).first()
     event = Event(
-        campaign_id=campaign.id,
-        lead_id=lead.id,
+        campaign_lead_id=cl.id,
         message_id=message.id,
         tipo=EventTipo.abertura,
         dados={"ip": "192.168.0.1"},

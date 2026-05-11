@@ -19,11 +19,9 @@ class LeadFunnelUpdate(BaseModel):
 
 class LeadResponse(BaseModel):
     id: uuid.UUID
-    campaign_id: uuid.UUID
     nome: str
     email: str
     telefone: str | None
-    status: LeadStatus
     dados_extras: dict | None
     created_at: datetime
     updated_at: datetime

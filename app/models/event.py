@@ -22,11 +22,8 @@ class Event(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    campaign_id: Mapped[uuid.UUID] = mapped_column(
-        Uuid(as_uuid=True), ForeignKey("campaigns.id", ondelete="CASCADE"), nullable=False
-    )
-    lead_id: Mapped[uuid.UUID | None] = mapped_column(
-        Uuid(as_uuid=True), ForeignKey("leads.id", ondelete="SET NULL"), nullable=True
+    campaign_lead_id: Mapped[uuid.UUID] = mapped_column(
+        Uuid(as_uuid=True), ForeignKey("campaign_leads.id", ondelete="CASCADE"), nullable=False
     )
     message_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid(as_uuid=True), ForeignKey("messages.id", ondelete="SET NULL"), nullable=True
@@ -37,6 +34,5 @@ class Event(Base):
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
 
-    campaign: Mapped["Campaign"] = relationship("Campaign", back_populates="events")
-    lead: Mapped["Lead | None"] = relationship("Lead", back_populates="events")
+    campaign_lead: Mapped["CampaignLead"] = relationship("CampaignLead", back_populates="events")
     message: Mapped["Message | None"] = relationship("Message", back_populates="events")
