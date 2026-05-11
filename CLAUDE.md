@@ -44,32 +44,15 @@ requirements.txt
 - messages e events apontam para campaign_lead_id, não para lead_id
 
 ## Status atual
-Dia 4 — Concluído.
+Dia 5 — Refatoração N para N concluída.
 27/27 testes passando.
-Endpoints: campaigns (4), leads com funil (4).
-Evento registrado automaticamente a cada movimentação de funil.
-
-## Em andamento
-Refatoração do modelo de dados para N para N (leads ↔ campaigns).
-Etapa atual: 6 de 6 — Testes.
-
-Etapas concluídas:
-1. CampaignLead criado, campaign_id removido de Lead, Message e Event
-   atualizados para campaign_lead_id.
-2. Migration gerada e aplicada no Supabase (alembic upgrade head).
-3. Schemas atualizados: campaign_lead.py criado (CampaignLeadCreate,
-   CampaignLeadResponse, CampaignLeadStatusUpdate,
-   CampaignLeadWithLeadResponse); LeadResponse sem campaign_id e status.
-4. Services atualizados: campaign_lead.py criado (create, get, list,
-   update_status); lead.py reescrito — create_lead usa transação Lead +
-   CampaignLead + Event; list_leads_with_status adicionado com joinedload.
-5. Routers atualizados: campaign_leads.py criado (enroll, list, get,
-   update_status); leads.py atualizado — GET /leads retorna
-   CampaignLeadWithLeadResponse, /funnel removido; main.py registra
-   campaign_leads router.
+Endpoints: campaigns (4), leads (3), campaign-leads (4).
+Relação N:N entre leads e campaigns via tabela campaign_leads.
+Evento registrado automaticamente a cada criação e movimentação de funil.
+Migration aplicada no Supabase. Commit: a7a6710.
 
 ## Próximo passo
-Etapa 6 — Reescrever testes para cobrir o novo modelo N para N.
+A definir.
 
 ## Hurdles documentados
 - Windows venv bloqueado: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
