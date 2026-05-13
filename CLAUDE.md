@@ -44,15 +44,17 @@ requirements.txt
 - messages e events apontam para campaign_lead_id, não para lead_id
 
 ## Status atual
-Dia 5 — Refatoração N para N concluída.
-27/27 testes passando.
-Endpoints: campaigns (4), leads (3), campaign-leads (4).
-Relação N:N entre leads e campaigns via tabela campaign_leads.
-Evento registrado automaticamente a cada criação e movimentação de funil.
-Migration aplicada no Supabase. Commit: a7a6710.
+Dia 6 — Mensagens e Analytics concluídos.
+37/37 testes passando.
+Endpoints: campaigns (4), leads (3), campaign-leads (4), messages (2), analytics (1).
+Mensagens vinculadas a campaign_lead_id (canal: email/whatsapp/sms, status: pendente por padrão).
+Analytics retorna total_leads, total_conversoes, taxa_conversao e distribuicao_status por campanha.
 
 ## Próximo passo
-A definir.
+Dia 7 — Deploy e entrega.
+- Configurar variáveis de ambiente no Railway
+- Testar API em produção
+- Documentação básica para o Dr. Hailton
 
 ## Hurdles documentados
 - Windows venv bloqueado: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
