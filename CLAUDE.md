@@ -44,17 +44,22 @@ requirements.txt
 - messages e events apontam para campaign_lead_id, não para lead_id
 
 ## Status atual
-Dia 6 — Mensagens e Analytics concluídos.
-37/37 testes passando.
+Dia 7 — Deploy concluído. Projeto entregue.
+37/37 testes passando. 14 endpoints funcionando em produção.
 Endpoints: campaigns (4), leads (3), campaign-leads (4), messages (2), analytics (1).
 Mensagens vinculadas a campaign_lead_id (canal: email/whatsapp/sms, status: pendente por padrão).
 Analytics retorna total_leads, total_conversoes, taxa_conversao e distribuicao_status por campanha.
+Deploy: Railway + Supabase PostgreSQL.
+Código no GitHub: MaylonTSU/Projeto-Campanha (branch main).
+API em produção: https://web-production-dd3b.up.railway.app
+Documentação: https://web-production-dd3b.up.railway.app/docs
 
 ## Próximo passo
-Dia 7 — Deploy e entrega.
-- Configurar variáveis de ambiente no Railway
-- Testar API em produção
-- Documentação básica para o Dr. Hailton
+Projeto MVP entregue. Possíveis evoluções futuras:
+- Autenticação (JWT)
+- Agendamento de campanhas
+- Integração real com canais (email/WhatsApp/SMS)
+- Dashboard front-end para o Dr. Hailton
 
 ## Hurdles documentados
 - Windows venv bloqueado: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
@@ -71,3 +76,8 @@ Dia 7 — Deploy e entrega.
 - sa.Enum com create_type=False não evita CREATE TYPE no op.create_table:
   usar postgresql.ENUM (from sqlalchemy.dialects import postgresql) que
   respeita create_type=False de forma confiável
+- SSL com Supabase no Railway: usar NullPool + connect_args={"sslmode": "require"}
+  para conexões PostgreSQL; SQLite mantém check_same_thread: False para testes
+- Supabase com Railway: conexão direta usa IPv6 — Railway não suporta.
+  Solução: usar Transaction Pooler (aws-1-us-west-2.pooler.supabase.com:6543)
+  URL format: postgresql://postgres.PROJECT_ID:SENHA@aws-1-us-west-2.pooler.supabase.com:6543/postgres
